@@ -11,6 +11,9 @@ if [ -d ~/bin ]; then
 	PATH=$PATH:~/bin
 fi
 
+# Exports
+export EDITOR=vim
+
 # Shell history
 HISTCONTROL=ignoreboth
 HISTSIZE=1024
@@ -24,12 +27,17 @@ shopt -s globstr
 shopt -s checkwinsize
 
 # Custom Prompt
-PS1="[\u@\h \W]\$ "
+bash_set_prompt() {
+	PS1="[\u@\h \W]\$ "
+}
+PROMPT_COMMAND=bash_set_prompt
 
 # Change default configurations
 alias ls="ls -h --color=auto"
 alias grep="grep --color=auto"
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 alias scp='scp -r'
+
 
 # Enable colored man pages
 man() {
@@ -46,3 +54,12 @@ man() {
 alias l="ls"
 alias c="cd"
 alias v="vim"
+
+# enable programmable completion features
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
