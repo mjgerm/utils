@@ -38,11 +38,9 @@ bash_set_prompt() {
 	if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 		debian_chroot=$(cat /etc/debian_chroot)
 	fi
-
-	PS1='\e[32m\u@\h\e[39m:\e[34m\W\e[39m \$ '
-
+	PS1='\e[00;32m\u@\h\e[m:\e[00;34m\w\e[m \$ '
 	if [[ $TERM =~ ^(rxvt|xterm) ]]; then
-		PS1="\[\e]0;\u@\h: \w\a\]$PS1"
+		PS1="\e]0;\u@\h:\W\a$PS1"
 	fi
 }
 PROMPT_COMMAND=bash_set_prompt
