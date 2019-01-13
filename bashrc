@@ -38,12 +38,9 @@ bash_set_prompt() {
 	if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 		debian_chroot=$(cat /etc/debian_chroot)
 	fi
-	if [[ $TERM =~ color$ ]]; then
-		PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-	else
-		PS1="[\u@\h \W]\$ "
-	fi
-	
+
+	PS1='\e[32m\u@\h\e[39m:\e[34m\W\e[39m \$ '
+
 	if [[ $TERM =~ ^(rxvt|xterm) ]]; then
 		PS1="\[\e]0;\u@\h: \w\a\]$PS1"
 	fi
