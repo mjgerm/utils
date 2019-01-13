@@ -49,9 +49,13 @@ unset PS1
 	if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 		debian_chroot=$(cat /etc/debian_chroot)
 	fi
-	PS1+="$fg_green$USER@$HOSTNAME$fg_off"
+	if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+		PS1+="$fg_green$USER@$HOSTNAME$fg_off"
+	else
+		PS1+="$fg_green$USER$fg_off"
+	fi
 	PS1+=":$fg_blue$PSDIR$fg_off"
-	PS1+="> "
+	PS1+=" $ "
 	if [[ $TERM =~ ^(rxvt|xterm) ]]; then
 		PS1+="\[\e]0;$USER on $HOSTNAME at $PSDIR\a\]"
 	fi
