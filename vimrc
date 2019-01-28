@@ -1,5 +1,4 @@
 " Colors
-color desert
 set background=dark
 syntax enable
 
