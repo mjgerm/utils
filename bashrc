@@ -25,7 +25,7 @@ shopt -s histappend
 
 # Match glob star (**) and dotfiles in pathname expansion
 shopt -s globstar
-shopt -s dotglob
+#shopt -s dotglob
 shopt -s extglob
 
 # Update shell if resized
