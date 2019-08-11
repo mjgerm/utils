@@ -18,6 +18,9 @@ set smartcase
 set incsearch
 set hlsearch
 
+" Tab Completion
+set wildmode=longest,list,full
+
 " Commands
 set showcmd
 
