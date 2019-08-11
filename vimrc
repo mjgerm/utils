@@ -5,6 +5,12 @@ syntax enable
 " Line Numbers
 set number
 
+" Window Navigation
+nmap <C-left> <C-w>h
+nmap <C-down> <C-w>j
+nmap <C-up> <C-w>k
+nmap <C-right> <C-w>l
+
 " Tabs
 set noexpandtab
 set tabstop=3
