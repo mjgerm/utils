@@ -23,13 +23,13 @@ HISTSIZE=1024
 HISTFILESIZE=2048
 shopt -s histappend
 
-# Match glob star (**) and dotfiles in pathname expansion
+# Match glob star (**) in pathname expansion
 shopt -s globstar
-#shopt -s dotglob
 shopt -s extglob
 
-# Update shell if resized
+# Set useful options
 shopt -s checkwinsize
+shopt -s autocd
 
 # Custom Prompt
 unset PS1
@@ -104,4 +104,9 @@ if ! shopt -oq posix; then
 	elif [ -f /etc/bash_completion ]; then
 		. /etc/bash_completion
 	fi
+fi
+
+# Update local dotfiles, if applicable
+if [ -d ~/.config/dotfiles ]; then
+	(cd ~/.config/dotfiles && git pull)
 fi
