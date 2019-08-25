@@ -15,7 +15,18 @@ fi
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # Exports
-export EDITOR=vim
+if [ ! -z $(type -p nvim) ]; then
+    export EDITOR="nvim"
+else
+    export EDITOR="vim"
+fi
+
+# Calculate with C-k, from http://askubuntu.com/a/379615/96292
+if [ ! -z $(type -p qalc) ]; then
+	 bind '"\C-k": "\C-aqalc \C-m"'
+else
+	 bind '"\C-k": "\C-abc \C-m"'
+fi
 
 # Shell history
 HISTCONTROL=ignoreboth
@@ -33,10 +44,13 @@ shopt -s autocd
 
 # Custom Prompt
 unset PS1
-	bash_prompt_util() {
-	PS1=""
-	local PSDIR=$(echo $PWD | sed "s/^$(echo $HOME | sed 's/\//\\\//g')/~/");
-	local debian_chroot
+prompt_mode() {
+    svn info >/dev/null 2>/dev/null && echo 'svn' && return
+    git branch >/dev/null 2>/dev/null && echo 'git' && return
+    echo 'normal'
+}
+bash_prompt_util() {
+	local errcode=$?
 	local fg_off="\[\033[0m\]"
 	local fg_red="\[\033[1;31m\]"
 	local fg_green="\[\033[1;32m\]"
@@ -45,37 +59,81 @@ unset PS1
 	local fg_purple="\[\033[1;35m\]"
 	local fg_cyan="\[\033[1;36m\]"
 	local fg_white="\[\033[1;37m\]"
+	PS1=""
+	local PSDIR=$(echo $PWD | sed "s/^$(echo $HOME | sed 's/\//\\\//g')/~/");
+	local debian_chroot
 	if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 		debian_chroot=$(cat /etc/debian_chroot)
 	fi
-	
-	if [ $USER == "root" ]; then
-		PS1+="$fg_red$USER@$HOSTNAME$fg_off"
-	else
-		if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-			PS1+="$fg_green$USER@$HOSTNAME$fg_off"
-		else
-			PS1+="$fg_green$USER$fg_off"
-		fi
-	fi
-	PS1+=":$fg_blue$PSDIR$fg_off"
-	PS1+=" $ "
-	if [[ $TERM =~ ^(rxvt|xterm) ]]; then
-		PS1+="\[\e]0;$USER on $HOSTNAME at $PSDIR\a\]"
-	fi
+	case "$(prompt_mode)" in
+		normal)
+			if [ $USER == "root" ]; then
+				PS1+="$fg_red$USER@$HOSTNAME$fg_off"
+			else
+				if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+					PS1+="$fg_green$USER@$HOSTNAME$fg_off"
+				else
+					PS1+="$fg_green$USER$fg_off"
+				fi
+			fi
+			PS1+=":$fg_blue$PSDIR$fg_off"
+			PS1+=" $ "
+			if [[ $TERM =~ ^(rxvt|xterm) ]]; then
+				PS1+="\[\e]0;$USER on $HOSTNAME at $PSDIR\a\]"
+			fi
+			;;
+		svn)
+			PS1+="$fg_green$(svn info | grep "Working Copy Root Path" | sed 's/\//\n/g' | tail -n1)$fg_off"
+			PS1+=":$fg_blue""r$(svnversion)$fg_off"
+			PS1+=" ± "
+			if [[ $TERM =~ ^(rxvt|xterm) ]]; then
+				PS1+="\[\e]0;$USER on $HOSTNAME in "
+				PS1+="$(svn info | grep "Working Copy Root Path" | sed 's/\//\n/g' | tail -n1)"
+				PS1+="\a\]"
+			fi
+			;;
+		git)
+			local GITPATH=$(pwd | sed "s/$(git rev-parse --show-toplevel | sed 's/\//\\\//g')//g")
+			PS1+="$fg_green$(basename `git rev-parse --show-toplevel`)$fg_off"
+			PS1+=" on $fg_blue$(git rev-parse --abbrev-ref HEAD)$fg_off"
+			PS1+=":$fg_blue$(git rev-parse --short HEAD)$fg_off"
+			if [ ! -z $GITPATH ]; then
+				PS1+=" $GITPATH"
+			fi
+			PS1+=" ☿ "
+			if [[ $TERM =~ ^(rxvt|xterm) ]]; then
+				PS1+="\[\e]0;$USER on $HOSTNAME in "
+				PS1+="$(basename `git rev-parse --show-toplevel`)"
+				PS1+=" on $(git rev-parse --abbrev-ref HEAD)\a\]"
+			fi
+			;;
+	esac
 }
 PROMPT_COMMAND=bash_prompt_util
 
 # Enable color support
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:';
+
+# Change default configurations
+alias scp='scp -r'
+alias kill9='kill -9'
 alias ls='ls -h --color=auto'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
+if [ ! -z $(type -p python3) ]; then
+    alias py='python3'
+else
+    alias py='python'
+fi
 
-# Change default configurations
-alias scp='scp -r'
+# Convenient cd macros
+alias ..='cd ..'
+alias ...='cd ../../'
+alias ....='cd ../../../'
+alias .....='cd ../../../../'
+alias -- -='cd -'
 
 # Enable colored man pages
 man() {
@@ -97,6 +155,17 @@ search() {
 	grep -RiI $1 | grep -v "^\.svn"
 }
 
+ducks() {
+	# List largest files, with optional list of files
+    local files=("${@}")
+    if [ ${#files[@]} -eq 0 ]; then
+        files=(*);
+    fi
+    du -cksh "${files[@]}" | sort -rh |
+        ( [ ${#@} -eq 0 ] && head -11 || cat ) |
+        sed 's|\s\+|\\|' | column -s '\' -t | sed '0,/$/{s/$/\n/}'
+}
+
 # enable programmable completion features
 if ! shopt -oq posix; then
 	if [ -f /usr/share/bash-completion/bash_completion ]; then
@@ -106,7 +175,12 @@ if ! shopt -oq posix; then
 	fi
 fi
 
-# Update local dotfiles, if applicable
-if [ -d ~/.config/dotfiles ]; then
-	(cd ~/.config/dotfiles && git pull)
+# Local customizations allowed and encouraged!
+if [ -f ~/.bashrc_local ]; then
+    source ~/.bashrc_local
 fi
+
+# Update local dotfiles, if applicable
+#if [ -d ~/.config/dotfiles ]; then
+#	(cd ~/.config/dotfiles && git pull)
+#fi
