@@ -1,3 +1,5 @@
+set nocompatible
+
 " Colors
 set background=dark
 syntax enable
@@ -5,13 +7,7 @@ syntax enable
 " Line Numbers
 set number
 
-" Window Navigation
-nmap <C-left> <C-w>h
-nmap <C-down> <C-w>j
-nmap <C-up> <C-w>k
-nmap <C-right> <C-w>l
-
-" Tabs
+" Indentation
 set noexpandtab
 set tabstop=3
 set softtabstop=3
@@ -20,15 +16,21 @@ set autoindent
 
 " Searching
 set ignorecase
+set wildignorecase
 set smartcase
 set incsearch
 set hlsearch
 
-" Tab Completion
-set wildmode=longest,list,full
+" Folding
+set foldnestmax=1
+set foldcolumn=1
 
-" Commands
+" Misc Settings
 set showcmd
+set autochdir
+set autoread
+set mouse=a
 
 " Specialized Tweaks
-autocmd FileType yaml,yml setlocal ts=2 sts=2 sw=2 expandtab
+autocmd FileType yaml,yml setlocal ts=2 sts=2 sw=2 et
+autocmd FileType c,cpp setlocal fdm=syntax cin
