@@ -45,8 +45,8 @@ shopt -s autocd
 # Custom Prompt
 unset PS1
 prompt_mode() {
-    svn info >/dev/null 2>/dev/null && echo 'svn' && return
-    git branch >/dev/null 2>/dev/null && echo 'git' && return
+    #svn info >/dev/null 2>/dev/null && echo 'svn' && return
+    #git branch >/dev/null 2>/dev/null && echo 'git' && return
     echo 'normal'
 }
 bash_prompt_util() {
