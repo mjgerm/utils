@@ -1,0 +1,12 @@
+# Remap prefix from C-b to backtick (`)
+unbind C-b
+set-option -g prefix `
+bind-key ` send-prefix
+
+# Sane window splitting
+bind | split-window -h
+bind \ split-window -h
+bind - split-window -v
+unbind '"'
+unbind %
+

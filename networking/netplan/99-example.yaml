@@ -1,0 +1,29 @@
+network:
+  version: 2
+  ethernets:
+    eno1:
+      dhcp4: false
+    eno2:
+      dhcp4: false
+    enp5s0:
+      dhcp4: false
+  vlans:
+    vlan4:
+      id: 4
+      link: enp5s0
+  bridges:
+    br0:
+      interfaces:
+        - eno1
+      dhcp4: true
+    br1:
+      interfaces:
+        - enp5s0
+        - eno2
+      addresses:
+        - 10.0.1.1/24
+    br2:
+      interfaces:
+        - wvlan4
+      addresses:
+        - 10.0.2.1/24

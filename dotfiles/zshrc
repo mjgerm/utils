@@ -1,0 +1,84 @@
+# The following lines were added by compinstall
+
+zstyle ':completion:*' completer _complete _ignored _approximate
+zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'
+zstyle ':completion:*' use-compctl false
+zstyle :compinstall filename '/usr/local/etc/zshrc'
+
+autoload -Uz compinit
+autoload -Uz colors && colors
+compinit
+# End of lines added by compinstall
+
+# Deal with .zshrc issues
+touch ~/.zshrc
+
+# Use ssh-agent
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
+# Common Options:
+setopt appendhistory beep nomatch notify correct
+# Craig Howland Compatibility
+setopt shwordsplit
+#setopt correctall
+unsetopt autocd extendedglob
+
+# Use vim keybindings
+bindkey -v
+
+# Use the local bin directory
+PATH=$PATH:~/bin
+
+# Fix the Home, End, and Delete keys.
+bindkey "^[[H" beginning-of-line
+bindkey "\e[1~" beginning-of-line
+bindkey "^[[F" end-of-line
+bindkey "\e[4~" end-of-line
+bindkey "^[[3~" delete-char
+
+# Enable colored man pages
+man() {
+	LESS_TERMCAP_md=$'\e[01;31m' \
+	LESS_TERMCAP_me=$'\e[0m' \
+	LESS_TERMCAP_se=$'\e[0m' \
+	LESS_TERMCAP_so=$'\e[01;44;33m' \
+	LESS_TERMCAP_ue=$'\e[0m' \
+	LESS_TERMCAP_us=$'\e[01;32m' \
+	command man "$@"
+}
+
+alias ppid='ps -o ppid= -p'
+
+# Custom Prompt:
+if [[ $UID -eq 0 ]] ; then
+	PS1="$fg[red][%n@%m %~]$fg[white]>"
+elif id -nG "$USER" | grep -qw "wheel"; then
+	PS1="$fg[yellow][%n@%m %~]$fg[white]>"
+else
+	PS1="$fg[green][%n@%m %~]$fg[white]>"
+fi
+
+# Custom Programs:
+alias exp=". explorer"
+#alias cd=". delta"
+alias ..=". delta .."
+alias ...=". delta ../.."
+alias v="vim"
+alias calc="dc"
+
+# Useful Aliases:
+alias ls="ls -h --color=auto"
+alias ll="ls -l"
+alias l.="ls -al"
+
+# Be Paranoid
+alias cp='cp -ipR'
+alias scp='scp -r'
+alias mv='mv -i'
+alias rm='rm -if'
+
+# Shorter Names
+alias cls='clear'
+alias clc='clear'
+alias l='ls'
+alias c='cd'
