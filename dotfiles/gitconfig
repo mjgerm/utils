@@ -1,3 +1,5 @@
 [alias]
 	ignore = "!f() { curl https://www.gitignore.io/api/$1 ;}; f >> .gitignore"
 	cm = "!f() { git add .; git commit -m $(date +%Y%m%d); git push; }; f"
+[submodule]
+        recurse = true
