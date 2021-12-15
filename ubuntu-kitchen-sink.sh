@@ -5,11 +5,11 @@ apt-get dist-upgrade
 # CLI tools
 snap install lxd
 apt-get install vim tmux zsh nmap
-apt-get install htop iotop iftop
+apt-get install htop iotop iftop net-tools
 apt-get install curl wget
 
 # System tools
-apt-get install zfsutils-linux sshfs cifs-utils nwipe virtualbox
+apt-get install zfsutils-linux sshfs cifs-utils nwipe virtualbox 
 
 # GUI tools
 apt-get install remmina gimp vlc gnome-tweak-tool keepassxc gnuplot
@@ -17,6 +17,7 @@ apt-get install remmina gimp vlc gnome-tweak-tool keepassxc gnuplot
 # Development (Generic)
 snap install --classic code
 apt-get install build-essentials
+apt-get install git subversion
 
 # Development (C)
 apt-get install cmake nasm gdb
