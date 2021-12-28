@@ -16,7 +16,7 @@ apt-get install remmina gimp vlc gnome-tweak-tool keepassxc gnuplot
 
 # Development (Generic)
 snap install --classic code
-apt-get install build-essentials
+apt-get install build-essential
 apt-get install git subversion
 
 # Development (C)
