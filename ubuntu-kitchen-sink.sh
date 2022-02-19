@@ -4,39 +4,34 @@ apt-get dist-upgrade
 
 # CLI tools
 snap install lxd
-apt-get install vim tmux zsh nmap
-apt-get install htop iotop iftop net-tools
-apt-get install curl wget
+apt-get install vim tmux
+apt-get install htop iotop iftop
+apt-get install net-tools nmap curl wget
 
 # System tools
-apt-get install zfsutils-linux sshfs cifs-utils nwipe virtualbox 
+apt-get install sshfs nwipe
+#apt-get install zfsutils-linux cifs-utils
 
 # GUI tools
-apt-get install remmina gimp vlc gnome-tweak-tool keepassxc gnuplot
+apt-get install pinta keepassxc gnuplot
 
 # Development (Generic)
 snap install --classic code
-apt-get install build-essential
-apt-get install git subversion
+apt-get install build-essential git
 
 # Development (C)
-apt-get install cmake nasm gdb
-apt-get install libc-devtools libfftw3-dev
+#apt-get install cmake nasm gdb
+#apt-get install libc-devtools libfftw3-dev
 
 # Development (Matlab)
 apt-get install octave octave-*
 
 # Development (Python)
 apt-get install python3 python3-pip
-pip3 install scipy matplotlib tensorflow
-pip3 install requests beautifulsoup4 Pillow
-pip3 install PyGTK wxPython serial
-pip3 install glances zfec
+pip3 install scipy matplotlib tensorflow tqdm serial requests glances
+#pip3 install beautifulsoup4 Pillow PyGTK wxPython zfec
 
 # Optional Addins
 # apt-get install nvidia nvidia-cuda-toolkit
 # pip3 install cupy
-# apt-get install virtualbox-ext-pack
-
-
-
+# apt-get install virtualbox virtualbox-ext-pack
