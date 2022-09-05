@@ -9,7 +9,7 @@ apt-get install htop iotop iftop
 apt-get install net-tools nmap curl wget
 
 # System tools
-apt-get install sshfs nwipe
+apt-get install sshfs nwipe zstd
 #apt-get install zfsutils-linux cifs-utils
 
 # GUI tools
