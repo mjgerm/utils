@@ -2,32 +2,30 @@
 apt update
 apt dist-upgrade
 
-# CLI tools
+# Snaps
+snap install chromium
 snap install lxd
-apt install vim tmux
-apt install htop iotop iftop
-apt install net-tools nmap curl wget
+snap install --classic code
+
+# Basics
+apt install python3 python3-pip vim tmux htop
+
+# CLI tools
+apt install iotop iftop net-tools nmap curl wget
 
 # System tools
-aptt install sshfs nwipe zstd
+apt install sshfs nwipe zstd
 #apt install zfsutils-linux cifs-utils
 
-# GUI tools
 apt install pinta keepassxc gnuplot
 
 # Development (Generic)
-snap install --classic code
 apt install build-essential git
-
-# Development (C)
-#apt install cmake nasm gdb
-#apt install libc-devtools libfftw3-dev
 
 # Development (Matlab)
 apt install octave octave-*
 
 # Development (Python)
-apt install python3 python3-pip
 pip3 install scipy matplotlib tensorflow tqdm serial requests glances
 #pip3 install beautifulsoup4 Pillow PyGTK wxPython zfec
 
