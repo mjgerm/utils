@@ -8,49 +8,34 @@ fi
 
 # Use the local bin directory, if available
 if [ -d ~/bin ]; then
-	PATH=$PATH:~/bin
+	export PATH=$PATH:~/bin
 fi
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # Exports
-if [ ! -z $(type -p nvim) ]; then
-    export EDITOR="nvim"
-else
-    export EDITOR="vim"
-fi
-
-# Calculate with C-k, from http://askubuntu.com/a/379615/96292
-if [ ! -z $(type -p qalc) ]; then
-	 bind '"\C-k": "\C-aqalc \C-m"'
-else
-	 bind '"\C-k": "\C-abc \C-m"'
+if [ ! -z $(type -p vim) ]; then
+	export EDITOR="vim"
 fi
 
 # Shell history
 HISTCONTROL=ignoreboth
-HISTSIZE=1024
-HISTFILESIZE=2048
+HISTSIZE=-1
+HISTFILESIZE=-1
 shopt -s histappend
-
-# Match glob star (**) in pathname expansion
-shopt -s globstar
-shopt -s extglob
 
 # Set useful options
 shopt -s checkwinsize
 shopt -s autocd
+# Match glob star (**) in pathname expansion
+shopt -s globstar
+shopt -s extglob
 
 # Custom Prompt
 unset PS1
-prompt_mode() {
-    #svn info >/dev/null 2>/dev/null && echo 'svn' && return
-    #git branch >/dev/null 2>/dev/null && echo 'git' && return
-    echo 'normal'
-}
 bash_prompt_util() {
-	local errcode=$?
+	local ps1_errcode=$?
 	local fg_off="\[\033[0m\]"
 	local fg_red="\[\033[1;31m\]"
 	local fg_green="\[\033[1;32m\]"
@@ -61,53 +46,31 @@ bash_prompt_util() {
 	local fg_white="\[\033[1;37m\]"
 	PS1=""
 	local PSDIR=$(echo $PWD | sed "s/^$(echo $HOME | sed 's/\//\\\//g')/~/");
-	local debian_chroot
-	if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-		debian_chroot=$(cat /etc/debian_chroot)
+	
+	if [ $ps1_errcode != 0 ]; then
+		PS1+="$fg_red[$ps1_errcode]$fg_off "
+	fi  
+	if [ -n "$TMUX" ]; then
+		: # Tmux already lists hostname for us.
+	elif [ $USER == "root" ]; then
+		PS1+="$fg_red!! ROOT@$HOSTNAME$fg_off"
+	elif [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+		PS1+="$fg_green$USER@$fg_off"
 	fi
-	case "$(prompt_mode)" in
-		normal)
-			if [ $USER == "root" ]; then
-				PS1+="$fg_red$USER@$HOSTNAME$fg_off"
-			else
-				if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-					PS1+="$fg_green$USER@$HOSTNAME$fg_off"
-				else
-					PS1+="$fg_green$USER$fg_off"
-				fi
-			fi
-			PS1+=":$fg_blue$PSDIR$fg_off"
-			PS1+=" $ "
-			if [[ $TERM =~ ^(rxvt|xterm) ]]; then
-				PS1+="\[\e]0;$USER on $HOSTNAME at $PSDIR\a\]"
-			fi
-			;;
-		svn)
-			PS1+="$fg_green$(svn info | grep "Working Copy Root Path" | sed 's/\//\n/g' | tail -n1)$fg_off"
-			PS1+=":$fg_blue""r$(svnversion)$fg_off"
-			PS1+=" ± "
-			if [[ $TERM =~ ^(rxvt|xterm) ]]; then
-				PS1+="\[\e]0;$USER on $HOSTNAME in "
-				PS1+="$(svn info | grep "Working Copy Root Path" | sed 's/\//\n/g' | tail -n1)"
-				PS1+="\a\]"
-			fi
-			;;
-		git)
-			local GITPATH=$(pwd | sed "s/$(git rev-parse --show-toplevel | sed 's/\//\\\//g')//g")
-			PS1+="$fg_green$(basename `git rev-parse --show-toplevel`)$fg_off"
-			PS1+=" on $fg_blue$(git rev-parse --abbrev-ref HEAD)$fg_off"
-			PS1+=":$fg_blue$(git rev-parse --short HEAD)$fg_off"
-			if [ ! -z $GITPATH ]; then
-				PS1+=" $GITPATH"
-			fi
-			PS1+=" ☿ "
-			if [[ $TERM =~ ^(rxvt|xterm) ]]; then
-				PS1+="\[\e]0;$USER on $HOSTNAME in "
-				PS1+="$(basename `git rev-parse --show-toplevel`)"
-				PS1+=" on $(git rev-parse --abbrev-ref HEAD)\a\]"
-			fi
-			;;
-	esac
+	PS1+="$fg_green$HOSTNAME$fg_off:$fg_blue$ps1_dir$fg_off"
+
+	local ps1_gitstat=$(git status --porcelain 2>/dev/null)
+	if [[ $ps1_gitstat ]]; then # Changes
+		PS1+="± "
+	else # No changes
+		PS1+="$ "
+	fi
+
+	PS1+=":$fg_blue$PSDIR$fg_off"
+	PS1+=" $ "
+	if [[ $TERM =~ ^(rxvt|xterm) ]]; then
+		PS1+="\[\e]0;$USER on $HOSTNAME at $PSDIR\a\]"
+	fi
 }
 PROMPT_COMMAND=bash_prompt_util
 
@@ -117,23 +80,12 @@ export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;
 
 # Change default configurations
 alias scp='scp -r'
-alias kill9='kill -9'
-alias ls='ls -h --color=auto'
 alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
-if [ ! -z $(type -p python3) ]; then
-    alias py='python3'
-else
-    alias py='python'
-fi
-
-# Convenient cd macros
-alias ..='cd ..'
-alias ...='cd ../../'
-alias ....='cd ../../../'
-alias .....='cd ../../../../'
-alias -- -='cd -'
+alias rm='rm -Iv'
+alias ls='ls -hN --color=auto'
+alias ip='ip --color=auto'
+alias grep='grep --color=auto'
+alias python='python3'
 
 # Enable colored man pages
 man() {
@@ -146,41 +98,10 @@ man() {
 	command man "$@"
 }
 
-# Useful new commands
-psgrep() {
-	ps aux | grep $1 | grep -v grep
-}
-
-search() {
-	grep -RiI $1 | grep -v "^\.svn"
-}
-
-ducks() {
-	# List largest files, with optional list of files
-    local files=("${@}")
-    if [ ${#files[@]} -eq 0 ]; then
-        files=(*);
-    fi
-    du -cksh "${files[@]}" | sort -rh |
-        ( [ ${#@} -eq 0 ] && head -11 || cat ) |
-        sed 's|\s\+|\\|' | column -s '\' -t | sed '0,/$/{s/$/\n/}'
-}
 
 # enable programmable completion features
-if ! shopt -oq posix; then
-	if [ -f /usr/share/bash-completion/bash_completion ]; then
-		. /usr/share/bash-completion/bash_completion
-	elif [ -f /etc/bash_completion ]; then
-		. /etc/bash_completion
-	fi
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+	. /usr/share/bash-completion/bash_completion
+elif [ -f /etc/bash_completion ]; then
+	. /etc/bash_completion
 fi
-
-# Local customizations allowed and encouraged!
-if [ -f ~/.bashrc_local ]; then
-    source ~/.bashrc_local
-fi
-
-# Update local dotfiles, if applicable
-#if [ -d ~/.config/dotfiles ]; then
-#	(cd ~/.config/dotfiles && git pull)
-#fi
