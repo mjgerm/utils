@@ -57,7 +57,7 @@ bash_prompt_util() {
 	elif [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
 		PS1+="$fg_green$USER@$fg_off"
 	fi
-	PS1+="$fg_green$HOSTNAME$fg_off:$fg_blue$ps1_dir$fg_off"
+	PS1+="$fg_green$HOSTNAME$fg_off:$fg_blue$PSDIR$fg_off"
 
 	local ps1_gitstat=$(git status --porcelain 2>/dev/null)
 	if [[ $ps1_gitstat ]]; then # Changes
@@ -65,9 +65,7 @@ bash_prompt_util() {
 	else # No changes
 		PS1+="$ "
 	fi
-
-	PS1+=":$fg_blue$PSDIR$fg_off"
-	PS1+=" $ "
+	
 	if [[ $TERM =~ ^(rxvt|xterm) ]]; then
 		PS1+="\[\e]0;$USER on $HOSTNAME at $PSDIR\a\]"
 	fi
