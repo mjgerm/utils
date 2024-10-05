@@ -52,8 +52,6 @@ bash_prompt_util() {
 	fi  
 	if [ -n "$TMUX" ]; then
 		: # Tmux already lists hostname for us.
-	elif [ $USER == "root" ]; then
-		PS1+="$fg_red!! ROOT@$HOSTNAME$fg_off"
 	elif [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
 		PS1+="$fg_green$USER@$fg_off"
 	fi
