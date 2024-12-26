@@ -3,6 +3,7 @@ set nocompatible
 " Colors
 set background=dark
 syntax enable
+color industry
 
 " Line Numbers
 set number
@@ -29,8 +30,7 @@ set foldcolumn=1
 set showcmd
 set autochdir
 set autoread
-set mouse=a
 
 " Specialized Tweaks
 autocmd FileType yaml,yml setlocal ts=2 sts=2 sw=2 et
-autocmd FileType c,cpp setlocal fdm=syntax cin
+autocmd FileType c,cpp setlocal fdm=syntax cin nofoldenable
